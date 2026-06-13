@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Weather - gRPC')}"></head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 sidebar py-3">
+            <div th:replace="~{layout :: sidebar}"></div>
+        </nav>
+        <main class="col-md-10 main-content p-4">
+            <h2 class="fw-bold mb-1"><i class="bi bi-thermometer-half me-2"></i>Weather Lookup (gRPC)</h2>
+            <p class="text-muted mb-4">
+                Fetches current temperature from
+                <a href="https://vrijeme.hr/hrvatska_n.xml" target="_blank">DHMZ</a>
+                via a gRPC streaming service running on port <code>9090</code>.
+                Partial city name matching is supported.
+            </p>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">City Name (or part of it)</label>
+                            <input type="text" id="cityInput" class="form-control"
+                                   placeholder="e.g. Zagreb, Split, Zag, Osi..."
+                                   th:value="${city}"/>
+                        </div>
+                        <div class="col-md-4">
+                            <button onclick="searchWeather()" class="btn btn-info w-100 text-white">
+                                <i class="bi bi-thermometer-half me-2"></i>Get Temperature
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading" class="d-none text-center py-3">
+                <div class="spinner-border text-info" role="status"></div>
+                <p class="mt-2 text-muted">Querying gRPC server...</p>
+            </div>
+
+            <div id="results" class="d-none">
+                <h5 class="fw-semibold mb-3">
+                    Results <span id="resultCount" class="badge bg-secondary ms-1"></span>
+                </h5>
+                <div id="resultCards" class="row g-3"></div>
+            </div>
+
+            <div id="errorMsg" class="d-none alert alert-danger"></div>
+
+            <div class="mt-4 card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold">How it works</h6>
+                    <ol class="small text-muted mb-0">
+                        <li>Browser calls <code>GET /api/weather?city=...</code> (REST bridge).</li>
+                        <li>The REST controller opens a gRPC channel to <code>localhost:9090</code> and calls <code>WeatherService.GetTemperature</code>.</li>
+                        <li>The gRPC service fetches <code>https://vrijeme.hr/hrvatska_n.xml</code>, parses it, and streams matching <code>&lt;Grad&gt;</code> entries.</li>
+                        <li>Results are returned as JSON and displayed here.</li>
+                    </ol>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+async function searchWeather() {
+    const city = document.getElementById('cityInput').value.trim();
+    if (!city) return;
+
+    document.getElementById('loading').classList.remove('d-none');
+    document.getElementById('results').classList.add('d-none');
+    document.getElementById('errorMsg').classList.add('d-none');
+
+    try {
+        const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+        const data = await response.json();
+
+        document.getElementById('loading').classList.add('d-none');
+
+        if (data.length === 0) {
+            document.getElementById('errorMsg').textContent = 'No results found for "' + city + '"';
+            document.getElementById('errorMsg').classList.remove('d-none');
+            return;
+        }
+
+        if (data[0].error) {
+            document.getElementById('errorMsg').textContent = data[0].error;
+            document.getElementById('errorMsg').classList.remove('d-none');
+            return;
+        }
+
+        document.getElementById('resultCount').textContent = data.length + ' found';
+        const cards = data.map(r => `
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <i class="bi bi-geo-alt text-info" style="font-size:1.5rem;"></i>
+                    <h5 class="fw-bold mt-2">${r.city}</h5>
+                    <p class="display-6 fw-bold text-info mb-0">${r.temperature}°C</p>
+                    <p class="text-muted small mt-1">${r.timestamp ? r.timestamp.substring(0,16).replace('T',' ') : ''}</p>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('resultCards').innerHTML = cards;
+        document.getElementById('results').classList.remove('d-none');
+    } catch (e) {
+        document.getElementById('loading').classList.add('d-none');
+        document.getElementById('errorMsg').textContent = 'Request failed: ' + e.message;
+        document.getElementById('errorMsg').classList.remove('d-none');
+    }
+}
+
+document.getElementById('cityInput').addEventListener('keypress', e => {
+    if (e.key === 'Enter') searchWeather();
+});
+</script>
+</body>
+</html>

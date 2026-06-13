@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${title} + ' | IISFinal'">IISFinal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <style>
+        .sidebar { min-height: 100vh; background: #212529; }
+        .sidebar .nav-link { color: #adb5bd; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background: rgba(255,255,255,.1); border-radius: 6px; }
+        .sidebar .nav-link i { width: 20px; }
+        .main-content { background: #f8f9fa; min-height: 100vh; }
+        .badge-role { font-size: .7rem; }
+    </style>
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-dark bg-dark px-3">
+    <a class="navbar-brand fw-bold" th:href="@{/web/dashboard}">
+        <i class="bi bi-tag-fill me-2"></i>CouponManager
+    </a>
+    <div class="d-flex align-items-center gap-3">
+        <span class="text-light small">
+            <i class="bi bi-person-circle me-1"></i>
+            <span sec:authentication="name">User</span>
+            <span sec:authorize="hasRole('FULL_ACCESS')" class="badge bg-success badge-role ms-1">FULL ACCESS</span>
+            <span sec:authorize="hasRole('READ_ONLY')" class="badge bg-secondary badge-role ms-1">READ ONLY</span>
+        </span>
+        <form method="post" th:action="@{/logout}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button class="btn btn-outline-light btn-sm" type="submit">
+                <i class="bi bi-box-arrow-right me-1"></i>Logout
+            </button>
+        </form>
+    </div>
+</nav>
+
+<div th:fragment="sidebar">
+    <div class="d-flex flex-column p-3 gap-1">
+        <p class="text-muted small text-uppercase fw-bold mb-2 ps-2">Navigation</p>
+        <a th:href="@{/web/dashboard}" class="nav-link px-3 py-2">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+        </a>
+        <a th:href="@{/web/coupons}" class="nav-link px-3 py-2">
+            <i class="bi bi-tag me-2"></i>Coupons
+        </a>
+        <a th:href="@{/web/coupons/upload}" class="nav-link px-3 py-2" sec:authorize="hasRole('FULL_ACCESS')">
+            <i class="bi bi-code-square me-2"></i>Import Coupon
+        </a>
+        <a th:href="@{/web/soap}" class="nav-link px-3 py-2">
+            <i class="bi bi-search me-2"></i>SOAP Search
+        </a>
+        <a th:href="@{/web/validate}" class="nav-link px-3 py-2">
+            <i class="bi bi-check-circle me-2"></i>XML Validation
+        </a>
+        <a th:href="@{/web/weather}" class="nav-link px-3 py-2">
+            <i class="bi bi-thermometer-half me-2"></i>Weather
+        </a>
+        <a th:href="@{/web/graphql}" class="nav-link px-3 py-2">
+            <i class="bi bi-braces me-2"></i>GraphQL
+        </a>
+        <a th:href="@{/graphiql}" target="_blank" class="nav-link px-3 py-2 text-muted small">
+            <i class="bi bi-box-arrow-up-right me-2"></i>GraphiQL IDE
+        </a>
+        <hr class="border-secondary"/>
+        <a th:href="@{/h2-console}" target="_blank" class="nav-link px-3 py-2 text-warning">
+            <i class="bi bi-database me-2"></i>H2 Console
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

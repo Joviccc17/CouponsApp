@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Coupon",
+  "description": "A promotional coupon (Stripe-compatible)",
+  "type": "object",
+  "required": ["id", "duration", "valid"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique coupon ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name for the coupon"
+    },
+    "percentOff": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Percentage discount (0-100)"
+    },
+    "amountOff": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Fixed amount discount in smallest currency unit (e.g. cents)"
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "ISO 4217 currency code (required when amountOff is set)"
+    },
+    "duration": {
+      "type": "string",
+      "enum": ["forever", "once", "repeating"],
+      "description": "How long the coupon applies"
+    },
+    "durationInMonths": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of months when duration=repeating"
+    },
+    "maxRedemptions": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum number of times this coupon can be redeemed"
+    },
+    "timesRedeemed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of times this coupon has been redeemed"
+    },
+    "valid": {
+      "type": "boolean",
+      "description": "Whether the coupon can be used"
+    },
+    "created": {
+      "type": "integer",
+      "description": "Unix timestamp of coupon creation"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Coupons')}"></head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 sidebar py-3">
+            <div th:replace="~{layout :: sidebar}"></div>
+        </nav>
+        <main class="col-md-10 main-content p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1"><i class="bi bi-tag me-2"></i>Coupons</h2>
+                    <p class="text-muted mb-0">Managed via REST API (GET/POST/PUT/DELETE)</p>
+                </div>
+                <div sec:authorize="hasRole('FULL_ACCESS')" class="d-flex gap-2">
+                    <a th:href="@{/web/coupons/upload}" class="btn btn-success">
+                        <i class="bi bi-upload me-1"></i>Upload XML/JSON
+                    </a>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div th:if="${coupons.isEmpty()}" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox" style="font-size:3rem;"></i>
+                        <p class="mt-2">No coupons found. Upload one to get started.</p>
+                    </div>
+                    <table th:unless="${coupons.isEmpty()}" class="table table-hover mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Discount</th>
+                            <th>Duration</th>
+                            <th>Valid</th>
+                            <th sec:authorize="hasRole('FULL_ACCESS')">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="c : ${coupons}">
+                            <td><code th:text="${c.id}"></code></td>
+                            <td th:text="${c.name ?: '—'}"></td>
+                            <td>
+                                <span th:if="${c.percentOff != null}" th:text="${c.percentOff + '%'}"></span>
+                                <span th:if="${c.amountOff != null}" th:text="${c.amountOff + ' ' + (c.currency ?: '')}"></span>
+                                <span th:if="${c.percentOff == null and c.amountOff == null}">—</span>
+                            </td>
+                            <td th:text="${c.duration}"></td>
+                            <td>
+                                <span th:if="${c.valid}" class="badge bg-success">Valid</span>
+                                <span th:unless="${c.valid}" class="badge bg-secondary">Invalid</span>
+                            </td>
+                            <td sec:authorize="hasRole('FULL_ACCESS')">
+                                <a th:href="@{/web/coupons/edit/{id}(id=${c.id})}"
+                                   class="btn btn-sm btn-outline-secondary me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a th:href="@{/web/coupons/delete/{id}(id=${c.id})}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Delete coupon ' + this.getAttribute('data-id') + '?')"
+                                   th:attr="data-id=${c.id}">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- Root element for a list of coupons (used by XmlGenerationService and Task 3 JAXB validation) -->
+    <xs:element name="coupons">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="coupon" type="couponType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Root element for a single coupon (used by Task 1 XSD validation on upload) -->
+    <xs:element name="coupon" type="couponType"/>
+
+    <xs:complexType name="couponType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string" minOccurs="1"/>
+            <xs:element name="name" type="xs:string" minOccurs="0"/>
+            <xs:element name="percentOff" type="xs:double" minOccurs="0"/>
+            <xs:element name="amountOff" type="xs:long" minOccurs="0"/>
+            <xs:element name="currency" type="xs:string" minOccurs="0"/>
+            <xs:element name="duration" type="durationType" minOccurs="1"/>
+            <xs:element name="durationInMonths" type="xs:integer" minOccurs="0"/>
+            <xs:element name="maxRedemptions" type="xs:integer" minOccurs="0"/>
+            <xs:element name="timesRedeemed" type="xs:integer" minOccurs="0"/>
+            <xs:element name="valid" type="xs:boolean" minOccurs="1"/>
+            <xs:element name="created" type="xs:long" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="durationType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="forever"/>
+            <xs:enumeration value="once"/>
+            <xs:enumeration value="repeating"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

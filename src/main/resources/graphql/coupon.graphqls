@@ -1,0 +1,43 @@
+type Coupon {
+    id: ID!
+    name: String
+    percentOff: Float
+    amountOff: Int
+    currency: String
+    duration: String!
+    durationInMonths: Int
+    maxRedemptions: Int
+    timesRedeemed: Int
+    valid: Boolean!
+    created: String
+}
+
+type Query {
+    coupons: [Coupon!]!
+    coupon(id: ID!): Coupon
+}
+
+type Mutation {
+    createCoupon(
+        id: ID!
+        name: String
+        duration: String!
+        valid: Boolean!
+        percentOff: Float
+        amountOff: Int
+    ): Coupon
+
+    updateCoupon(
+        id: ID!
+        name: String
+        percentOff: Float
+        amountOff: Int
+        currency: String
+        duration: String
+        durationInMonths: Int
+        maxRedemptions: Int
+        valid: Boolean
+    ): Coupon
+
+    deleteCoupon(id: ID!): Boolean
+}

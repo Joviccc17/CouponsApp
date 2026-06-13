@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('GraphQL')}"></head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 sidebar py-3">
+            <div th:replace="~{layout :: sidebar}"></div>
+        </nav>
+        <main class="col-md-10 main-content p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1"><i class="bi bi-braces me-2"></i>GraphQL API</h2>
+                    <p class="text-muted mb-0">Queries and mutations against the coupon database via GraphQL.</p>
+                </div>
+                <a href="/graphiql" target="_blank" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Open GraphiQL IDE
+                </a>
+            </div>
+
+            <!-- QUERY: List All Coupons -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold border-bottom">
+                    <i class="bi bi-list-ul text-primary me-2"></i>Query — List All Coupons
+                </div>
+                <div class="card-body">
+                    <button onclick="queryCoupons()" class="btn btn-primary btn-sm mb-3">
+                        <i class="bi bi-play-fill me-1"></i>Execute
+                    </button>
+                    <div id="couponsResult"></div>
+                </div>
+            </div>
+
+            <!-- QUERY: Get by ID -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold border-bottom">
+                    <i class="bi bi-search text-primary me-2"></i>Query — Get Coupon by ID
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 align-items-end mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Coupon ID</label>
+                            <input type="text" id="queryId" class="form-control form-control-sm" placeholder="e.g. SUMMER25"/>
+                        </div>
+                        <div class="col-auto">
+                            <button onclick="queryCouponById()" class="btn btn-primary btn-sm">
+                                <i class="bi bi-play-fill me-1"></i>Execute
+                            </button>
+                        </div>
+                    </div>
+                    <div id="couponByIdResult"></div>
+                </div>
+            </div>
+
+            <!-- MUTATION: Create Coupon (FULL_ACCESS only) -->
+            <div class="card border-0 shadow-sm mb-4" sec:authorize="hasRole('FULL_ACCESS')">
+                <div class="card-header bg-white fw-bold border-bottom">
+                    <i class="bi bi-plus-circle text-success me-2"></i>Mutation — Create Coupon
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">ID <span class="text-danger">*</span></label>
+                            <input type="text" id="createId" class="form-control form-control-sm" placeholder="COUPON_ID"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Name</label>
+                            <input type="text" id="createName" class="form-control form-control-sm" placeholder="Display name"/>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">Duration <span class="text-danger">*</span></label>
+                            <select id="createDuration" class="form-select form-select-sm">
+                                <option value="forever">forever</option>
+                                <option value="once">once</option>
+                                <option value="repeating">repeating</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">% Off</label>
+                            <input type="number" id="createPercentOff" class="form-control form-control-sm" placeholder="0-100" step="0.01"/>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">Valid <span class="text-danger">*</span></label>
+                            <select id="createValid" class="form-select form-select-sm">
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="mutateCreate()" class="btn btn-success btn-sm">
+                        <i class="bi bi-play-fill me-1"></i>Execute
+                    </button>
+                    <div id="createResult" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- MUTATION: Update Coupon (FULL_ACCESS only) -->
+            <div class="card border-0 shadow-sm mb-4" sec:authorize="hasRole('FULL_ACCESS')">
+                <div class="card-header bg-white fw-bold border-bottom">
+                    <i class="bi bi-pencil text-warning me-2"></i>Mutation — Update Coupon
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">ID <span class="text-danger">*</span></label>
+                            <input type="text" id="updateId" class="form-control form-control-sm" placeholder="COUPON_ID"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Name</label>
+                            <input type="text" id="updateName" class="form-control form-control-sm" placeholder="New name"/>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">% Off</label>
+                            <input type="number" id="updatePercentOff" class="form-control form-control-sm" step="0.01" placeholder="0-100"/>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">Duration</label>
+                            <select id="updateDuration" class="form-select form-select-sm">
+                                <option value="">— no change —</option>
+                                <option value="forever">forever</option>
+                                <option value="once">once</option>
+                                <option value="repeating">repeating</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold">Valid</label>
+                            <select id="updateValid" class="form-select form-select-sm">
+                                <option value="">— no change —</option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="mutateUpdate()" class="btn btn-warning btn-sm">
+                        <i class="bi bi-play-fill me-1"></i>Execute
+                    </button>
+                    <div id="updateResult" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- MUTATION: Delete Coupon (FULL_ACCESS only) -->
+            <div class="card border-0 shadow-sm mb-4" sec:authorize="hasRole('FULL_ACCESS')">
+                <div class="card-header bg-white fw-bold border-bottom">
+                    <i class="bi bi-trash text-danger me-2"></i>Mutation — Delete Coupon
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 align-items-end mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Coupon ID <span class="text-danger">*</span></label>
+                            <input type="text" id="deleteId" class="form-control form-control-sm" placeholder="COUPON_ID"/>
+                        </div>
+                        <div class="col-auto">
+                            <button onclick="mutateDelete()" class="btn btn-danger btn-sm">
+                                <i class="bi bi-play-fill me-1"></i>Execute
+                            </button>
+                        </div>
+                    </div>
+                    <div id="deleteResult"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+async function gql(query, variables) {
+    const resp = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, variables })
+    });
+    return resp.json();
+}
+
+function resultBox(data, targetId) {
+    const el = document.getElementById(targetId);
+    if (data.errors) {
+        el.innerHTML = `<div class="alert alert-danger small py-2"><strong>Error:</strong> ${data.errors.map(e => e.message).join('; ')}</div>`;
+    } else {
+        el.innerHTML = `<pre class="bg-light p-3 rounded small mb-0" style="max-height:300px;overflow:auto">${JSON.stringify(data.data, null, 2)}</pre>`;
+    }
+}
+
+async function queryCoupons() {
+    const data = await gql(`{ coupons { id name percentOff amountOff currency duration valid timesRedeemed } }`);
+    const el = document.getElementById('couponsResult');
+    if (data.errors) { resultBox(data, 'couponsResult'); return; }
+    const coupons = data.data.coupons;
+    if (!coupons.length) { el.innerHTML = '<p class="text-muted small">No coupons found.</p>'; return; }
+    const rows = coupons.map(c => `
+        <tr>
+            <td><code>${c.id}</code></td>
+            <td>${c.name || '—'}</td>
+            <td>${c.percentOff != null ? c.percentOff + '%' : (c.amountOff != null ? c.amountOff + ' ' + (c.currency || '') : '—')}</td>
+            <td>${c.duration}</td>
+            <td><span class="badge ${c.valid ? 'bg-success' : 'bg-secondary'}">${c.valid}</span></td>
+        </tr>`).join('');
+    el.innerHTML = `<table class="table table-sm table-hover small mb-0">
+        <thead class="table-light"><tr><th>ID</th><th>Name</th><th>Discount</th><th>Duration</th><th>Valid</th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function queryCouponById() {
+    const id = document.getElementById('queryId').value.trim();
+    if (!id) return;
+    const data = await gql(`query($id: ID!) { coupon(id: $id) { id name percentOff amountOff currency duration durationInMonths maxRedemptions timesRedeemed valid created } }`, { id });
+    resultBox(data, 'couponByIdResult');
+}
+
+async function mutateCreate() {
+    const id = document.getElementById('createId').value.trim();
+    const name = document.getElementById('createName').value.trim() || null;
+    const duration = document.getElementById('createDuration').value;
+    const valid = document.getElementById('createValid').value === 'true';
+    const pOff = document.getElementById('createPercentOff').value;
+    const percentOff = pOff !== '' ? parseFloat(pOff) : null;
+    if (!id) { document.getElementById('createResult').innerHTML = '<div class="alert alert-warning small py-2">ID is required.</div>'; return; }
+    const data = await gql(
+        `mutation($id: ID!, $name: String, $duration: String!, $valid: Boolean!, $percentOff: Float) {
+            createCoupon(id: $id, name: $name, duration: $duration, valid: $valid, percentOff: $percentOff) {
+                id name duration valid percentOff
+            }
+        }`,
+        { id, name, duration, valid, percentOff }
+    );
+    resultBox(data, 'createResult');
+}
+
+async function mutateUpdate() {
+    const id = document.getElementById('updateId').value.trim();
+    if (!id) { document.getElementById('updateResult').innerHTML = '<div class="alert alert-warning small py-2">ID is required.</div>'; return; }
+    const variables = { id };
+    const nameVal = document.getElementById('updateName').value.trim();
+    if (nameVal) variables.name = nameVal;
+    const pOff = document.getElementById('updatePercentOff').value;
+    if (pOff !== '') variables.percentOff = parseFloat(pOff);
+    const dur = document.getElementById('updateDuration').value;
+    if (dur) variables.duration = dur;
+    const validVal = document.getElementById('updateValid').value;
+    if (validVal !== '') variables.valid = validVal === 'true';
+    const data = await gql(
+        `mutation($id: ID!, $name: String, $percentOff: Float, $duration: String, $valid: Boolean) {
+            updateCoupon(id: $id, name: $name, percentOff: $percentOff, duration: $duration, valid: $valid) {
+                id name percentOff duration valid
+            }
+        }`,
+        variables
+    );
+    resultBox(data, 'updateResult');
+}
+
+async function mutateDelete() {
+    const id = document.getElementById('deleteId').value.trim();
+    if (!id) { document.getElementById('deleteResult').innerHTML = '<div class="alert alert-warning small py-2">ID is required.</div>'; return; }
+    if (!confirm(`Delete coupon "${id}"?`)) return;
+    const data = await gql(`mutation($id: ID!) { deleteCoupon(id: $id) }`, { id });
+    const el = document.getElementById('deleteResult');
+    if (data.errors) { resultBox(data, 'deleteResult'); return; }
+    const ok = data.data.deleteCoupon;
+    el.innerHTML = ok
+        ? `<div class="alert alert-success small py-2"><i class="bi bi-check-circle me-1"></i>Coupon "${id}" deleted.</div>`
+        : `<div class="alert alert-warning small py-2">Coupon "${id}" not found.</div>`;
+}
+</script>
+</body>
+</html>

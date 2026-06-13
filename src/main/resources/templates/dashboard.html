@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Dashboard')}"></head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 sidebar py-3">
+            <div th:replace="~{layout :: sidebar}"></div>
+        </nav>
+        <main class="col-md-10 main-content p-4">
+            <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
+            <p class="text-muted mb-4">Welcome to the IIS Final Project — Promotional Coupons System</p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <i class="bi bi-tag text-primary" style="font-size:2rem;"></i>
+                        <h4 class="fw-bold mt-2" th:text="${couponCount}">0</h4>
+                        <p class="text-muted small mb-0">Total Coupons</p>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3">Available Features</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold"><i class="bi bi-tag text-primary me-2"></i>Coupons</h6>
+                            <p class="small text-muted">Manage coupons via REST endpoints. Import XML/JSON with schema validation.</p>
+                            <a th:href="@{/web/coupons}" class="btn btn-sm btn-outline-primary">Open</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold"><i class="bi bi-search text-success me-2"></i>SOAP Search</h6>
+                            <p class="small text-muted">Search coupons using a SOAP web service with XPath filtering on generated XML.</p>
+                            <a th:href="@{/web/soap}" class="btn btn-sm btn-outline-success">Open</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold"><i class="bi bi-check-circle text-warning me-2"></i>XML Validation</h6>
+                            <p class="small text-muted">Validate the generated coupons.xml using Jakarta XML Binding (JAXB).</p>
+                            <a th:href="@{/web/validate}" class="btn btn-sm btn-outline-warning">Open</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold"><i class="bi bi-thermometer-half text-info me-2"></i>Weather</h6>
+                            <p class="small text-muted">Get current temperature by city name from DHMZ via gRPC streaming service.</p>
+                            <a th:href="@{/web/weather}" class="btn btn-sm btn-outline-info">Open</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold"><i class="bi bi-braces text-danger me-2"></i>GraphQL</h6>
+                            <p class="small text-muted">Explore and mutate coupons via GraphQL. Uses JWT auth for mutations.</p>
+                            <a th:href="@{/web/graphql}" class="btn btn-sm btn-outline-danger">Open GraphQL UI</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" sec:authorize="hasRole('FULL_ACCESS')">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold"><i class="bi bi-code-square text-secondary me-2"></i>Import Coupon</h6>
+                            <p class="small text-muted">Paste coupon data as XML or JSON with automatic schema validation.</p>
+                            <a th:href="@{/web/coupons/upload}" class="btn btn-sm btn-outline-secondary">Import</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-white rounded shadow-sm">
+                <h6 class="fw-bold">API Info</h6>
+                <p class="small text-muted mb-1">REST base: <code>http://localhost:8080/api/coupons</code></p>
+                <p class="small text-muted mb-1">SOAP WSDL: <a href="/soap/coupons?wsdl" target="_blank"><code>/soap/coupons?wsdl</code></a></p>
+                <p class="small text-muted mb-1">gRPC port: <code>9090</code></p>
+                <p class="small text-muted mb-0">GraphQL: <a href="/graphiql" target="_blank"><code>/graphiql</code></a></p>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

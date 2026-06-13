@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('XML Validation')}"></head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 sidebar py-3">
+            <div th:replace="~{layout :: sidebar}"></div>
+        </nav>
+        <main class="col-md-10 main-content p-4">
+            <h2 class="fw-bold mb-1"><i class="bi bi-check-circle me-2"></i>XML Validation (JAXB)</h2>
+            <p class="text-muted mb-4">
+                Validates the generated <code>coupons.xml</code> file against <code>coupon.xsd</code>
+                using Jakarta XML Binding (JAXB). The file is generated automatically when coupons are saved.
+            </p>
+
+            <div th:if="${valid}" class="alert alert-success d-flex align-items-center">
+                <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+                <div>
+                    <strong>Validation passed!</strong><br/>
+                    <span class="small">The generated <code>coupons.xml</code> is valid according to <code>coupon.xsd</code>.</span>
+                </div>
+            </div>
+
+            <div th:unless="${valid}" class="alert alert-danger">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <strong>Validation failed!</strong>
+                </div>
+                <p class="mb-2 small">The following issues were found in <code>coupons.xml</code>:</p>
+                <ul class="mb-0">
+                    <li th:each="err : ${errors}" th:text="${err}" class="small"></li>
+                </ul>
+            </div>
+
+            <form method="get" th:action="@{/web/validate}" class="mt-3">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Re-validate
+                </button>
+                <a th:href="@{/web/coupons}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-tag me-2"></i>Manage Coupons
+                </a>
+            </form>
+
+            <div class="mt-4 card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold">How it works</h6>
+                    <ol class="small text-muted mb-0">
+                        <li>When a coupon is saved, <code>XmlGenerationService</code> marshals all coupons to <code>./data/coupons.xml</code> using JAXB.</li>
+                        <li>This page calls <code>XmlValidationService</code> which creates a JAXB <code>Unmarshaller</code> with a <code>Schema</code> attached.</li>
+                        <li>During unmarshal, JAXB validates each element against <code>coupon.xsd</code> rules (required fields, enum values, types).</li>
+                        <li>Validation events (WARNING / ERROR / FATAL) are collected and displayed here.</li>
+                    </ol>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

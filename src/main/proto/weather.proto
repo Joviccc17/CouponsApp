@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package hr.algebra.weather;
+
+option java_package = "hr.algebra.iisfinal.grpc.generated";
+option java_outer_classname = "WeatherProto";
+option java_multiple_files = true;
+
+// gRPC service for fetching current temperature from DHMZ (Croatian Met Service)
+service WeatherService {
+    // Returns a stream of temperature entries matching the (partial) city name
+    rpc GetTemperature(CityRequest) returns (stream TemperatureResponse);
+}
+
+message CityRequest {
+    string city_name = 1;
+}
+
+message TemperatureResponse {
+    string city = 1;
+    string temperature = 2;
+    string timestamp = 3;
+}
