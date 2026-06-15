@@ -25,8 +25,10 @@ public class JsonValidationService {
             JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
             InputStream schemaStream = getClass().getResourceAsStream("/schemas/coupon-schema.json");
             JsonSchema schema = factory.getSchema(schemaStream);
+
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(jsonContent);
+
             Set<ValidationMessage> message = schema.validate(node);
             message.forEach(m -> errors.add(m.getMessage()));
 

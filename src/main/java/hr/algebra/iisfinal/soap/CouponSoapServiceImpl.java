@@ -38,6 +38,7 @@ public class CouponSoapServiceImpl implements CouponSoapService {
     @Override
     public List<CouponDTO> searchCoupons(String term) {
         List<CouponDTO> results = new ArrayList<>();
+
         if (term == null || term.isBlank()) return results;
 
         File xmlFile = new File(xmlOutputPath);

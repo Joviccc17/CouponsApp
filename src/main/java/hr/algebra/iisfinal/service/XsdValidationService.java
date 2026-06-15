@@ -20,6 +20,7 @@ public class XsdValidationService {
         List<String> errors = new ArrayList<>();
 
         try {
+
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = schemaFactory.newSchema(getClass().getResource("/schemas/coupon.xsd"));
             Validator validator = schema.newValidator();
