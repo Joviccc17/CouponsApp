@@ -36,6 +36,11 @@ public class CouponService {
         return couponRepository.findById(id).map(this::toDto);
     }
 
+    // CRUD operations always persist to the local database regardless of the app.use-stripe-api switch.
+    // The switch only controls where GET operations read from (Stripe API vs local DB).
+    // This means creates, updates, and deletes made in API mode are stored locally
+    // and will be visible when switching back to local (offline) mode.
+
     @Transactional
     public CouponDTO saveCoupon(CouponDTO dto) {
         Coupon coupon = toEntity(dto);
