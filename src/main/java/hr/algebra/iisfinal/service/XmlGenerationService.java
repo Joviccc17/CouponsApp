@@ -36,11 +36,14 @@ public class XmlGenerationService {
     }
 
     public void generateCouponsXml() {
+
         try {
             List<CouponDTO> coupons;
+
             if (useStripeApi) {
                 coupons = stripeApiService.fetchAll();
-            } else {
+            }
+            else {
                 coupons = couponRepository.findAll().stream()
                         .map(this::toDto)
                         .toList();
@@ -49,15 +52,17 @@ public class XmlGenerationService {
             CouponListWrapper wrapper = new CouponListWrapper();
             wrapper.setCoupons(coupons);
 
-            JAXBContext ctx = JAXBContext.newInstance(CouponListWrapper.class, CouponDTO.class);
-            Marshaller m = ctx.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            JAXBContext context = JAXBContext.newInstance(CouponListWrapper.class, CouponDTO.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             File outputFile = new File(xmlOutputPath);
             outputFile.getParentFile().mkdirs();
-            m.marshal(wrapper, outputFile);
+            marshaller.marshal(wrapper, outputFile);
+
             log.debug("Generated coupons.xml with {} entries (source: {}) at {}",
                     coupons.size(), useStripeApi ? "Stripe" : "local DB", xmlOutputPath);
+
         } catch (Exception e) {
             log.error("Failed to generate coupons XML", e);
         }

@@ -31,17 +31,17 @@ public class XmlValidationService {
         }
 
         try {
-            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = sf.newSchema(getClass().getResource("/schemas/coupon.xsd"));
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(getClass().getResource("/schemas/coupon.xsd"));
 
-            JAXBContext ctx = JAXBContext.newInstance(CouponListWrapper.class);
-            Unmarshaller u = ctx.createUnmarshaller();
-            u.setSchema(schema);
-            u.setEventHandler(event -> {
+            JAXBContext context = JAXBContext.newInstance(CouponListWrapper.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            unmarshaller.setSchema(schema);
+            unmarshaller.setEventHandler(event -> {
                 errors.add("[" + severityLabel(event.getSeverity()) + "] " + event.getMessage());
                 return true;
             });
-            u.unmarshal(xmlFile);
+            unmarshaller.unmarshal(xmlFile);
         } catch (Exception e) {
             errors.add("Validation error: " + e.getMessage());
         }

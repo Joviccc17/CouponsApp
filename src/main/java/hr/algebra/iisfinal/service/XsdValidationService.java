@@ -18,9 +18,10 @@ public class XsdValidationService {
 
     public List<String> validate(String xmlContent) {
         List<String> errors = new ArrayList<>();
+
         try {
-            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = sf.newSchema(getClass().getResource("/schemas/coupon.xsd"));
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(getClass().getResource("/schemas/coupon.xsd"));
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new ErrorHandler() {
                 @Override

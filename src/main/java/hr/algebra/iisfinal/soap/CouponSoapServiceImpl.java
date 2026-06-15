@@ -42,20 +42,20 @@ public class CouponSoapServiceImpl implements CouponSoapService {
 
         File xmlFile = new File(xmlOutputPath);
         if (!xmlFile.exists()) {
+
             log.warn("coupons.xml not found at {}. Add coupons first.", xmlOutputPath);
             return results;
         }
 
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(xmlFile);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse(xmlFile);
 
-            XPathFactory xpf = XPathFactory.newInstance();
-            XPath xpath = xpf.newXPath();
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
 
-            // Case-insensitive XPath filter on name and id
             String lower = term.toLowerCase().replace("'", "");
             String xpathExpr = String.format(
                 "//coupon[contains(translate(name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'%s')" +
@@ -65,12 +65,12 @@ public class CouponSoapServiceImpl implements CouponSoapService {
 
             NodeList nodes = (NodeList) xpath.evaluate(xpathExpr, doc, XPathConstants.NODESET);
 
-            JAXBContext ctx = JAXBContext.newInstance(CouponDTO.class);
-            Unmarshaller u = ctx.createUnmarshaller();
+            JAXBContext context = JAXBContext.newInstance(CouponDTO.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
 
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
-                JAXBElement<CouponDTO> element = u.unmarshal(node, CouponDTO.class);
+                JAXBElement<CouponDTO> element = unmarshaller.unmarshal(node, CouponDTO.class);
                 results.add(element.getValue());
             }
         } catch (Exception e) {

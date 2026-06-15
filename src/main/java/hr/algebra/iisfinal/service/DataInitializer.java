@@ -1,6 +1,6 @@
 package hr.algebra.iisfinal.service;
 
-import hr.algebra.iisfinal.model.AppUser;
+import hr.algebra.iisfinal.model.User;
 import hr.algebra.iisfinal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if (userRepository.findByUsername("admin").isEmpty()) {
-            userRepository.save(AppUser.builder()
+            userRepository.save(User.builder()
                     .username("admin")
                     .password(passwordEncoder.encode("admin123"))
                     .role("FULL_ACCESS")
@@ -28,7 +28,7 @@ public class DataInitializer implements ApplicationRunner {
             log.info("Created admin user (FULL_ACCESS) — password: admin123");
         }
         if (userRepository.findByUsername("viewer").isEmpty()) {
-            userRepository.save(AppUser.builder()
+            userRepository.save(User.builder()
                     .username("viewer")
                     .password(passwordEncoder.encode("viewer123"))
                     .role("READ_ONLY")

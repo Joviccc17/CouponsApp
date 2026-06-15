@@ -17,15 +17,19 @@ import java.util.Set;
 public class JsonValidationService {
 
     public List<String> validate(String jsonContent) {
+
         List<String> errors = new ArrayList<>();
+
         try {
+
             JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
             InputStream schemaStream = getClass().getResourceAsStream("/schemas/coupon-schema.json");
             JsonSchema schema = factory.getSchema(schemaStream);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(jsonContent);
-            Set<ValidationMessage> msgs = schema.validate(node);
-            msgs.forEach(m -> errors.add(m.getMessage()));
+            Set<ValidationMessage> message = schema.validate(node);
+            message.forEach(m -> errors.add(m.getMessage()));
+
         } catch (Exception e) {
             errors.add("Validation failed: " + e.getMessage());
         }

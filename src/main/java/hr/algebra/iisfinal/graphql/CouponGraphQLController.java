@@ -37,7 +37,7 @@ public class CouponGraphQLController {
                                    @Argument Boolean valid,
                                    @Argument Double percentOff,
                                    @Argument Long amountOff) {
-        CouponDTO dto = CouponDTO.builder()
+        CouponDTO couponDTO = CouponDTO.builder()
                 .id(id)
                 .name(name)
                 .duration(duration)
@@ -45,7 +45,7 @@ public class CouponGraphQLController {
                 .percentOff(percentOff)
                 .amountOff(amountOff)
                 .build();
-        return couponService.saveCoupon(dto);
+        return couponService.saveCoupon(couponDTO);
     }
 
     @MutationMapping
@@ -59,7 +59,7 @@ public class CouponGraphQLController {
                                    @Argument Integer durationInMonths,
                                    @Argument Integer maxRedemptions,
                                    @Argument Boolean valid) {
-        CouponDTO update = CouponDTO.builder()
+        CouponDTO updateCoupon = CouponDTO.builder()
                 .name(name)
                 .percentOff(percentOff)
                 .amountOff(amountOff)
@@ -69,7 +69,7 @@ public class CouponGraphQLController {
                 .maxRedemptions(maxRedemptions)
                 .valid(valid)
                 .build();
-        return couponService.updateCoupon(id, update).orElse(null);
+        return couponService.updateCoupon(id, updateCoupon).orElse(null);
     }
 
     @MutationMapping

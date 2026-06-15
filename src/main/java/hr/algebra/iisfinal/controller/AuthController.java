@@ -27,14 +27,14 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-        UserDetails userDetails = userDetailsService.loadUserByUsername(req.getUsername());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         String role = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
-        String accessToken = jwtService.generateAccessToken(req.getUsername(), role);
-        String refreshToken = jwtService.generateRefreshToken(req.getUsername());
+        String accessToken = jwtService.generateAccessToken(request.getUsername(), role);
+        String refreshToken = jwtService.generateRefreshToken(request.getUsername());
         return ResponseEntity.ok(TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -48,16 +48,16 @@ public class AuthController {
         if (refreshTokenStr == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "refreshToken is required");
         }
-        RefreshToken rt = jwtService.findRefreshToken(refreshTokenStr)
+        RefreshToken refreshToken = jwtService.findRefreshToken(refreshTokenStr)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
-        if (rt.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (refreshToken.getExpiresAt().isBefore(LocalDateTime.now())) {
             jwtService.deleteRefreshToken(refreshTokenStr);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired");
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(rt.getUsername());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUsername());
         String role = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
-        String newAccessToken = jwtService.generateAccessToken(rt.getUsername(), role);
-        String newRefreshToken = jwtService.generateRefreshToken(rt.getUsername());
+        String newAccessToken = jwtService.generateAccessToken(refreshToken.getUsername(), role);
+        String newRefreshToken = jwtService.generateRefreshToken(refreshToken.getUsername());
         jwtService.deleteRefreshToken(refreshTokenStr);
         return ResponseEntity.ok(TokenResponse.builder()
                 .accessToken(newAccessToken)

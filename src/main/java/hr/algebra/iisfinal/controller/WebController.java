@@ -69,24 +69,24 @@ public class WebController {
         List<String> errors = new ArrayList<>();
         String success = null;
         try {
-            CouponDTO dto = null;
+            CouponDTO couponDTO = null;
             if ("xml".equalsIgnoreCase(type)) {
                 errors = xsdValidationService.validate(content);
                 if (errors.isEmpty()) {
-                    dto = new XmlMapper().readValue(content, CouponDTO.class);
+                    couponDTO = new XmlMapper().readValue(content, CouponDTO.class);
                 }
             } else {
                 errors = jsonValidationService.validate(content);
                 if (errors.isEmpty()) {
-                    dto = new ObjectMapper().readValue(content, CouponDTO.class);
+                    couponDTO = new ObjectMapper().readValue(content, CouponDTO.class);
                 }
             }
-            if (errors.isEmpty() && dto != null) {
-                if (couponService.getCouponById(dto.getId()).isPresent()) {
-                    errors.add("Coupon '" + dto.getId() + "' already exists. Use the Edit page to update it.");
+            if (errors.isEmpty() && couponDTO != null) {
+                if (couponService.getCouponById(couponDTO.getId()).isPresent()) {
+                    errors.add("Coupon '" + couponDTO.getId() + "' already exists.");
                 } else {
-                    couponService.saveCoupon(dto);
-                    success = "Coupon '" + dto.getId() + "' saved successfully!";
+                    couponService.saveCoupon(couponDTO);
+                    success = "Coupon '" + couponDTO.getId() + "' saved successfully!";
                 }
             }
         } catch (Exception e) {

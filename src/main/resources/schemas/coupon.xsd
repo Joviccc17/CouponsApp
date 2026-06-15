@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <!-- Root element for a list of coupons (used by XmlGenerationService and Task 3 JAXB validation) -->
     <xs:element name="coupons">
         <xs:complexType>
             <xs:sequence>
@@ -10,7 +9,6 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- Root element for a single coupon (used by Task 1 XSD validation on upload) -->
     <xs:element name="coupon" type="couponType"/>
 
     <xs:complexType name="couponType">

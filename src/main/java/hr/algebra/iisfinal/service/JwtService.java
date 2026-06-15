@@ -49,12 +49,12 @@ public class JwtService {
     @Transactional
     public String generateRefreshToken(String username) {
         String token = UUID.randomUUID().toString();
-        RefreshToken rt = RefreshToken.builder()
+        RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)
                 .username(username)
                 .expiresAt(LocalDateTime.now().plusSeconds(refreshTokenExpiryMs / 1000))
                 .build();
-        refreshTokenRepository.save(rt);
+        refreshTokenRepository.save(refreshToken);
         return token;
     }
 

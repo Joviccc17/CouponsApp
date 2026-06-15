@@ -29,9 +29,11 @@ public class StripeApiService {
                     .bodyToMono(StripeListResponse.class)
                     .block();
             return response != null ? response.getData() : List.of();
+
         } catch (WebClientResponseException e) {
             log.error("Stripe API error {}: {}", e.getStatusCode(), e.getResponseBodyAsString());
             return List.of();
+
         } catch (Exception e) {
             log.error("Failed to fetch coupons from Stripe", e);
             return List.of();
@@ -39,13 +41,16 @@ public class StripeApiService {
     }
 
     public Optional<CouponDTO> fetchById(String id) {
+
         try {
-            CouponDTO coupon = stripeWebClient.get()
+
+            CouponDTO couponDto = stripeWebClient.get()
                     .uri("/v1/coupons/{id}", id)
                     .retrieve()
                     .bodyToMono(CouponDTO.class)
                     .block();
-            return Optional.ofNullable(coupon);
+            return Optional.ofNullable(couponDto);
+
         } catch (Exception e) {
             log.warn("Coupon {} not found on Stripe: {}", id, e.getMessage());
             return Optional.empty();

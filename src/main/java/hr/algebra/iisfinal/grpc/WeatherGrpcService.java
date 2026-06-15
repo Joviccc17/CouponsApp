@@ -32,30 +32,33 @@ public class WeatherGrpcService extends WeatherServiceGrpc.WeatherServiceImplBas
     public void getTemperature(CityRequest request, StreamObserver<TemperatureResponse> responseObserver) {
         String citySearch = request.getCityName().toLowerCase().trim();
         try {
-            String xml = dhmzWebClient.get()
+            String getXml = dhmzWebClient.get()
                     .uri("/hrvatska_n.xml")
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
 
-            if (xml == null) {
+            if (getXml == null) {
                 responseObserver.onError(Status.UNAVAILABLE
                         .withDescription("DHMZ returned empty response").asRuntimeException());
                 return;
             }
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(xml)));
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document doc = documentBuilder.parse(new InputSource(new StringReader(getXml)));
 
             NodeList gradovi = doc.getElementsByTagName("Grad");
             boolean found = false;
 
             for (int i = 0; i < gradovi.getLength(); i++) {
+
                 Element grad = (Element) gradovi.item(i);
                 String gradIme = getTextContent(grad, "GradIme");
+
                 if (gradIme != null && gradIme.toLowerCase().contains(citySearch)) {
+
                     String temp = getTextContent(grad, "Temp");
                     responseObserver.onNext(TemperatureResponse.newBuilder()
                             .setCity(gradIme)
@@ -63,10 +66,12 @@ public class WeatherGrpcService extends WeatherServiceGrpc.WeatherServiceImplBas
                             .setTimestamp(LocalDateTime.now().toString())
                             .build());
                     found = true;
+
                 }
             }
 
             if (!found) {
+
                 responseObserver.onNext(TemperatureResponse.newBuilder()
                         .setCity(request.getCityName())
                         .setTemperature("N/A")
@@ -75,7 +80,9 @@ public class WeatherGrpcService extends WeatherServiceGrpc.WeatherServiceImplBas
             }
 
             responseObserver.onCompleted();
+
         } catch (Exception e) {
+
             log.error("gRPC weather lookup failed", e);
             responseObserver.onError(Status.UNAVAILABLE
                     .withDescription("DHMZ service unavailable: " + e.getMessage()).asRuntimeException());
@@ -83,9 +90,9 @@ public class WeatherGrpcService extends WeatherServiceGrpc.WeatherServiceImplBas
     }
 
     private String getTextContent(Element parent, String tagName) {
-        NodeList nl = parent.getElementsByTagName(tagName);
-        if (nl.getLength() > 0) {
-            String text = nl.item(0).getTextContent().trim();
+        NodeList nodeList = parent.getElementsByTagName(tagName);
+        if (nodeList.getLength() > 0) {
+            String text = nodeList.item(0).getTextContent().trim();
             return text.isEmpty() ? null : text;
         }
         return null;

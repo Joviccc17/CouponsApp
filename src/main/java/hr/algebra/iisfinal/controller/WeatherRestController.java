@@ -26,6 +26,7 @@ public class WeatherRestController {
 
     @GetMapping
     public List<Map<String, String>> getTemperature(@RequestParam String city) {
+
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress("localhost", grpcPort)
                 .usePlaintext()
@@ -33,9 +34,11 @@ public class WeatherRestController {
         try {
             WeatherServiceGrpc.WeatherServiceBlockingStub stub =
                     WeatherServiceGrpc.newBlockingStub(channel);
+
             CityRequest req = CityRequest.newBuilder()
                     .setCityName(city)
                     .build();
+
             List<Map<String, String>> results = new ArrayList<>();
             stub.getTemperature(req).forEachRemaining(r -> {
                 Map<String, String> entry = new HashMap<>();

@@ -46,8 +46,8 @@ public class CouponRestController {
         }
         try {
             XmlMapper xmlMapper = new XmlMapper();
-            CouponDTO dto = xmlMapper.readValue(xmlBody, CouponDTO.class);
-            return ResponseEntity.status(HttpStatus.CREATED).body(couponService.saveCoupon(dto));
+            CouponDTO couponDTO = xmlMapper.readValue(xmlBody, CouponDTO.class);
+            return ResponseEntity.status(HttpStatus.CREATED).body(couponService.saveCoupon(couponDTO));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("errors", List.of("XML parse error: " + e.getMessage())));
         }
@@ -61,21 +61,21 @@ public class CouponRestController {
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
-            CouponDTO dto = mapper.readValue(jsonBody, CouponDTO.class);
-            return ResponseEntity.status(HttpStatus.CREATED).body(couponService.saveCoupon(dto));
+            CouponDTO couponDTO = mapper.readValue(jsonBody, CouponDTO.class);
+            return ResponseEntity.status(HttpStatus.CREATED).body(couponService.saveCoupon(couponDTO));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("errors", List.of("JSON parse error: " + e.getMessage())));
         }
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CouponDTO> create(@RequestBody CouponDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.saveCoupon(dto));
+    public ResponseEntity<CouponDTO> create(@RequestBody CouponDTO couponDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.saveCoupon(couponDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CouponDTO> update(@PathVariable String id, @RequestBody CouponDTO dto) {
-        return couponService.updateCoupon(id, dto)
+    public ResponseEntity<CouponDTO> update(@PathVariable String id, @RequestBody CouponDTO couponDTO) {
+        return couponService.updateCoupon(id, couponDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

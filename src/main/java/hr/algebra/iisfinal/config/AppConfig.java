@@ -30,9 +30,9 @@ public class AppConfig {
 
     @Bean
     public ServletRegistrationBean<JakartaWebServlet> h2Console() {
-        ServletRegistrationBean<JakartaWebServlet> reg =
+        ServletRegistrationBean<JakartaWebServlet> register =
                 new ServletRegistrationBean<>(new JakartaWebServlet(), "/h2-console/*");
-        reg.addInitParameter("webAllowOthers", "true");
-        return reg;
+        register.addInitParameter("webAllowOthers", "true");
+        return register;
     }
 }
