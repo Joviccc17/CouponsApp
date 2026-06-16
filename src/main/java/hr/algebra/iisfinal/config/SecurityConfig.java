@@ -1,7 +1,9 @@
 package hr.algebra.iisfinal.config;
 
 import hr.algebra.iisfinal.security.JwtAuthFilter;
+import hr.algebra.iisfinal.security.JwtLoginSuccessHandler;
 import hr.algebra.iisfinal.security.UserDetailsServiceImpl;
+import hr.algebra.iisfinal.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,8 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsServiceImpl userDetailsService;
+    private final JwtLoginSuccessHandler jwtLoginSuccessHandler;
+    private final CookieUtil cookieUtil;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,13 +55,16 @@ public class SecurityConfig {
                 .requestMatchers("/web/**").authenticated()
                 .anyRequest().authenticated()
             )
-            .formLogin(fl -> fl
+            .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/web/dashboard", true)
+                .loginProcessingUrl("/login")
+                .successHandler(jwtLoginSuccessHandler)
                 .permitAll()
             )
-            .logout(lo -> lo
+            .logout(logout -> logout
                 .logoutUrl("/logout")
+                .addLogoutHandler((request, response, auth) ->
+                        cookieUtil.clearTokenCookies(response))
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )

@@ -1,10 +1,12 @@
 package hr.algebra.iisfinal.controller;
 
 import hr.algebra.iisfinal.dto.LoginRequest;
-import hr.algebra.iisfinal.dto.TokenResponse;
 import hr.algebra.iisfinal.model.RefreshToken;
 import hr.algebra.iisfinal.security.UserDetailsServiceImpl;
 import hr.algebra.iisfinal.service.JwtService;
+import hr.algebra.iisfinal.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,11 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationManager authenticationManager;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request,
+                                                     HttpServletResponse response) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -35,16 +39,24 @@ public class AuthController {
         String role = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
         String accessToken = jwtService.generateAccessToken(request.getUsername(), role);
         String refreshToken = jwtService.generateRefreshToken(request.getUsername());
-        return ResponseEntity.ok(TokenResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .expiresIn(900)
-                .build());
+        cookieUtil.setAccessTokenCookie(response, accessToken);
+        cookieUtil.setRefreshTokenCookie(response, refreshToken);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "role", role,
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
+        ));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh(@RequestBody Map<String, String> body) {
-        String refreshTokenStr = body.get("refreshToken");
+    public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request,
+                                                       HttpServletResponse response,
+                                                       @RequestBody(required = false) Map<String, String> body) {
+        String refreshTokenStr = cookieUtil.extractRefreshToken(request);
+        if (refreshTokenStr == null && body != null) {
+            refreshTokenStr = body.get("refreshToken");
+        }
         if (refreshTokenStr == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "refreshToken is required");
         }
@@ -57,12 +69,13 @@ public class AuthController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUsername());
         String role = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
         String newAccessToken = jwtService.generateAccessToken(refreshToken.getUsername(), role);
-        String newRefreshToken = jwtService.generateRefreshToken(refreshToken.getUsername());
-        jwtService.deleteRefreshToken(refreshTokenStr);
-        return ResponseEntity.ok(TokenResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .expiresIn(900)
-                .build());
+        cookieUtil.setAccessTokenCookie(response, newAccessToken);
+        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        cookieUtil.clearTokenCookies(response);
+        return ResponseEntity.ok().build();
     }
 }

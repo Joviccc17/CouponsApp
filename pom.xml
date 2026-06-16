@@ -23,7 +23,7 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web + Security + Thymeleaf -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -41,7 +41,7 @@
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
-        <!-- JPA + H2 -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -51,19 +51,19 @@
             <artifactId>h2</artifactId>
         </dependency>
 
-        <!-- WebFlux (for WebClient) -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
-        <!-- GraphQL -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-graphql</artifactId>
         </dependency>
 
-        <!-- JWT -->
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -82,7 +82,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Apache CXF SOAP -->
+
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
@@ -94,21 +94,21 @@
             <version>${cxf.version}</version>
         </dependency>
 
-        <!-- Jakarta WS API -->
+
         <dependency>
             <groupId>jakarta.xml.ws</groupId>
             <artifactId>jakarta.xml.ws-api</artifactId>
             <version>4.0.2</version>
         </dependency>
 
-        <!-- JAXB Runtime -->
+
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>4.0.5</version>
         </dependency>
 
-        <!-- gRPC -->
+
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
@@ -135,27 +135,27 @@
             <version>1.3.2</version>
         </dependency>
 
-        <!-- JSON Schema Validation -->
+
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
             <version>1.5.4</version>
         </dependency>
 
-        <!-- Jackson XML -->
+
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
 
-        <!-- Lombok -->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- DevTools -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -163,7 +163,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Test -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security-test</artifactId>
@@ -234,7 +234,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Register generated protobuf/gRPC sources as compile source roots -->
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -255,7 +255,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Protobuf code generation for gRPC -->
+
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>

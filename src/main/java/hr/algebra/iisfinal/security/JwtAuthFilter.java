@@ -1,6 +1,7 @@
 package hr.algebra.iisfinal.security;
 
 import hr.algebra.iisfinal.service.JwtService;
+import hr.algebra.iisfinal.util.CookieUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,14 +23,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final CookieUtil cookieUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+        String token = resolveToken(request);
+        if (token != null) {
             try {
                 Claims claims = jwtService.validateToken(token);
                 String username = claims.getSubject();
@@ -44,5 +45,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private String resolveToken(HttpServletRequest request) {
+        String cookieToken = cookieUtil.extractAccessToken(request);
+        if (cookieToken != null) {
+            return cookieToken;
+        }
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
     }
 }
