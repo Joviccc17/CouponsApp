@@ -9,11 +9,7 @@
             <div th:replace="~{layout :: sidebar}"></div>
         </nav>
         <main class="col-md-10 main-content p-4">
-            <h2 class="fw-bold mb-1"><i class="bi bi-check-circle me-2"></i>XML Validation (JAXB)</h2>
-            <p class="text-muted mb-4">
-                Validates the generated <code>coupons.xml</code> file against <code>coupon.xsd</code>
-                using Jakarta XML Binding (JAXB). The file is generated automatically when coupons are saved.
-            </p>
+            <h2 class="fw-bold mb-1"><i class="bi bi-check-circle me-2"></i>XML Validation</h2>
 
             <div th:if="${valid}" class="alert alert-success d-flex align-items-center">
                 <i class="bi bi-check-circle-fill fs-4 me-3"></i>
@@ -42,18 +38,6 @@
                     <i class="bi bi-tag me-2"></i>Manage Coupons
                 </a>
             </form>
-
-            <div class="mt-4 card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="fw-bold">How it works</h6>
-                    <ol class="small text-muted mb-0">
-                        <li>When a coupon is saved, <code>XmlGenerationService</code> marshals all coupons to <code>./data/coupons.xml</code> using JAXB.</li>
-                        <li>This page calls <code>XmlValidationService</code> which creates a JAXB <code>Unmarshaller</code> with a <code>Schema</code> attached.</li>
-                        <li>During unmarshal, JAXB validates each element against <code>coupon.xsd</code> rules (required fields, enum values, types).</li>
-                        <li>Validation events (WARNING / ERROR / FATAL) are collected and displayed here.</li>
-                    </ol>
-                </div>
-            </div>
         </main>
     </div>
 </div>

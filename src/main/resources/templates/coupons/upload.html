@@ -10,10 +10,6 @@
         </nav>
         <main class="col-md-10 main-content p-4">
             <h2 class="fw-bold mb-1"><i class="bi bi-code-square me-2"></i>Import Coupon</h2>
-            <p class="text-muted mb-4">
-                Paste coupon data as XML or JSON. The content will be validated against the schema before saving to the database.
-            </p>
-
             <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
                 <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -26,7 +22,6 @@
             </div>
 
             <div class="row g-4">
-                <!-- XML Box -->
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-warning bg-opacity-10 border-0 pb-0 pt-3 px-4">
@@ -54,8 +49,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- JSON Box -->
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-success bg-opacity-10 border-0 pb-0 pt-3 px-4">
@@ -84,8 +77,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Schema rules reference -->
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body px-4 py-3">
                     <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2 text-primary"></i>Required fields</h6>

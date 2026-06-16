@@ -10,18 +10,11 @@
         </nav>
         <main class="col-md-10 main-content p-4">
             <h2 class="fw-bold mb-1"><i class="bi bi-thermometer-half me-2"></i>Weather Lookup (gRPC)</h2>
-            <p class="text-muted mb-4">
-                Fetches current temperature from
-                <a href="https://vrijeme.hr/hrvatska_n.xml" target="_blank">DHMZ</a>
-                via a gRPC streaming service running on port <code>9090</code>.
-                Partial city name matching is supported.
-            </p>
-
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <div class="row g-2 align-items-end">
                         <div class="col-md-8">
-                            <label class="form-label fw-semibold">City Name (or part of it)</label>
+                            <label class="form-label fw-semibold">City Name</label>
                             <input type="text" id="cityInput" class="form-control"
                                    placeholder="e.g. Zagreb, Split, Zag, Osi..."
                                    th:value="${city}"/>
@@ -48,18 +41,6 @@
             </div>
 
             <div id="errorMsg" class="d-none alert alert-danger"></div>
-
-            <div class="mt-4 card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="fw-bold">How it works</h6>
-                    <ol class="small text-muted mb-0">
-                        <li>Browser calls <code>GET /api/weather?city=...</code> (REST bridge).</li>
-                        <li>The REST controller opens a gRPC channel to <code>localhost:9090</code> and calls <code>WeatherService.GetTemperature</code>.</li>
-                        <li>The gRPC service fetches <code>https://vrijeme.hr/hrvatska_n.xml</code>, parses it, and streams matching <code>&lt;Grad&gt;</code> entries.</li>
-                        <li>Results are returned as JSON and displayed here.</li>
-                    </ol>
-                </div>
-            </div>
         </main>
     </div>
 </div>

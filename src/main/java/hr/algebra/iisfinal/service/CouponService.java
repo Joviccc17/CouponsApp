@@ -23,7 +23,6 @@ public class CouponService {
     private boolean useStripeApi;
 
     public List<CouponDTO> getAllCoupons() {
-
         if (useStripeApi) {
             return stripeApiService.fetchAll();
         }
@@ -39,6 +38,11 @@ public class CouponService {
 
     @Transactional
     public CouponDTO saveCoupon(CouponDTO dto) {
+        if (useStripeApi) {
+            CouponDTO created = stripeApiService.create(dto);
+            xmlGenerationService.generateCouponsXml();
+            return created;
+        }
         Coupon coupon = toEntity(dto);
         if (coupon.getCreated() == null) {
             coupon.setCreated(System.currentTimeMillis() / 1000);
@@ -53,6 +57,12 @@ public class CouponService {
 
     @Transactional
     public Optional<CouponDTO> updateCoupon(String id, CouponDTO dto) {
+        if (useStripeApi) {
+            return stripeApiService.update(id, dto).map(updated -> {
+                xmlGenerationService.generateCouponsXml();
+                return updated;
+            });
+        }
         return couponRepository.findById(id).map(existing -> {
             if (dto.getName() != null) existing.setName(dto.getName());
             if (dto.getPercentOff() != null) existing.setPercentOff(dto.getPercentOff());
@@ -70,6 +80,11 @@ public class CouponService {
 
     @Transactional
     public boolean deleteCoupon(String id) {
+        if (useStripeApi) {
+            boolean deleted = stripeApiService.delete(id);
+            if (deleted) xmlGenerationService.generateCouponsXml();
+            return deleted;
+        }
         if (couponRepository.existsById(id)) {
             couponRepository.deleteById(id);
             xmlGenerationService.generateCouponsXml();

@@ -13,14 +13,10 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold mb-1"><i class="bi bi-braces me-2"></i>GraphQL API</h2>
-                    <p class="text-muted mb-0">Queries and mutations against the coupon database via GraphQL.</p>
                 </div>
-                <a href="/graphiql" target="_blank" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Open GraphiQL IDE
-                </a>
             </div>
 
-            <!-- QUERY: List All Coupons -->
+
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white fw-bold border-bottom">
                     <i class="bi bi-list-ul text-primary me-2"></i>Query — List All Coupons
@@ -33,7 +29,6 @@
                 </div>
             </div>
 
-            <!-- QUERY: Get by ID -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white fw-bold border-bottom">
                     <i class="bi bi-search text-primary me-2"></i>Query — Get Coupon by ID
@@ -54,7 +49,6 @@
                 </div>
             </div>
 
-            <!-- MUTATION: Create Coupon (FULL_ACCESS only) -->
             <div class="card border-0 shadow-sm mb-4" sec:authorize="hasRole('FULL_ACCESS')">
                 <div class="card-header bg-white fw-bold border-bottom">
                     <i class="bi bi-plus-circle text-success me-2"></i>Mutation — Create Coupon
@@ -96,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- MUTATION: Update Coupon (FULL_ACCESS only) -->
             <div class="card border-0 shadow-sm mb-4" sec:authorize="hasRole('FULL_ACCESS')">
                 <div class="card-header bg-white fw-bold border-bottom">
                     <i class="bi bi-pencil text-warning me-2"></i>Mutation — Update Coupon
@@ -140,7 +133,6 @@
                 </div>
             </div>
 
-            <!-- MUTATION: Delete Coupon (FULL_ACCESS only) -->
             <div class="card border-0 shadow-sm mb-4" sec:authorize="hasRole('FULL_ACCESS')">
                 <div class="card-header bg-white fw-bold border-bottom">
                     <i class="bi bi-trash text-danger me-2"></i>Mutation — Delete Coupon
