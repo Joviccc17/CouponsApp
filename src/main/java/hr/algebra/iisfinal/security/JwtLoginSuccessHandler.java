@@ -25,8 +25,10 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
         String role = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+
         String accessToken = jwtService.generateAccessToken(username, role);
         String refreshToken = jwtService.generateRefreshToken(username);
+
         cookieUtil.setAccessTokenCookie(response, accessToken);
         cookieUtil.setRefreshTokenCookie(response, refreshToken);
         response.sendRedirect("/web/dashboard");

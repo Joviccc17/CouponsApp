@@ -69,7 +69,9 @@ public class WebController {
         List<String> errors = new ArrayList<>();
         String success = null;
         try {
+
             CouponDTO couponDTO = null;
+
             if ("xml".equalsIgnoreCase(type)) {
                 errors = xsdValidationService.validate(content);
                 if (errors.isEmpty()) {
@@ -111,6 +113,7 @@ public class WebController {
     @PostMapping("/web/soap")
     public String soapSearch(@RequestParam("term") String term, Model model) {
         try {
+
             URL wsdlUrl = new URL("http://localhost:" + serverPort + "/soap/coupons?wsdl");
             QName serviceName = new QName("http://soap.iisfinal.algebra.hr/", "CouponService");
             Service wsSvc = Service.create(wsdlUrl, serviceName);

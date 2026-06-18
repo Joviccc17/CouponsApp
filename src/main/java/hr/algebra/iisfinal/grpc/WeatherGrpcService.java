@@ -31,6 +31,7 @@ public class WeatherGrpcService extends WeatherServiceGrpc.WeatherServiceImplBas
     @Override
     public void getTemperature(CityRequest request, StreamObserver<TemperatureResponse> responseObserver) {
         String citySearch = request.getCityName().toLowerCase().trim();
+
         try {
             String getXml = dhmzWebClient.get()
                     .uri("/hrvatska_n.xml")

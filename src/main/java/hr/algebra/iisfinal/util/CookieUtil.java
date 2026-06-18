@@ -15,14 +15,14 @@ public class CookieUtil {
 
     public void setRefreshTokenCookie(HttpServletResponse response, String token) {
         response.addHeader("Set-Cookie",
-                "refresh_token=" + token + "; HttpOnly; Path=/auth/refresh; SameSite=Strict; Max-Age=604800");
+                "refresh_token=" + token + "; HttpOnly; Path=/; SameSite=Strict; Max-Age=604800");
     }
 
     public void clearTokenCookies(HttpServletResponse response) {
         response.addHeader("Set-Cookie",
                 "access_token=; HttpOnly; Path=/; SameSite=Strict; Max-Age=0");
         response.addHeader("Set-Cookie",
-                "refresh_token=; HttpOnly; Path=/auth/refresh; SameSite=Strict; Max-Age=0");
+                "refresh_token=; HttpOnly; Path=/; SameSite=Strict; Max-Age=0");
     }
 
     public String extractAccessToken(HttpServletRequest request) {

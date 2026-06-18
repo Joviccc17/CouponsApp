@@ -18,6 +18,7 @@ public class AppConfig {
 
     @Bean("stripeWebClient")
     public WebClient stripeWebClient() {
+
         HttpClient httpClient = HttpClient.create()
                 .resolver(DefaultAddressResolverGroup.INSTANCE);
         return WebClient.builder()

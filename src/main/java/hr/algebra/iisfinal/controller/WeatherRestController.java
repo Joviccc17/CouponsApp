@@ -35,26 +35,31 @@ public class WeatherRestController {
             WeatherServiceGrpc.WeatherServiceBlockingStub stub =
                     WeatherServiceGrpc.newBlockingStub(channel);
 
-            CityRequest req = CityRequest.newBuilder()
+            CityRequest request = CityRequest.newBuilder()
                     .setCityName(city)
                     .build();
 
             List<Map<String, String>> results = new ArrayList<>();
-            stub.getTemperature(req).forEachRemaining(r -> {
+
+            stub.getTemperature(request).forEachRemaining(r -> {
                 Map<String, String> entry = new HashMap<>();
                 entry.put("city", r.getCity());
                 entry.put("temperature", r.getTemperature());
                 entry.put("timestamp", r.getTimestamp());
                 results.add(entry);
             });
+
             return results;
+
         } catch (Exception e) {
+
             log.error("gRPC call failed", e);
             List<Map<String, String>> error = new ArrayList<>();
             Map<String, String> err = new HashMap<>();
             err.put("error", "Weather service unavailable: " + e.getMessage());
             error.add(err);
             return error;
+
         } finally {
             channel.shutdown();
         }

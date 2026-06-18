@@ -35,6 +35,7 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         String role = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
         String accessToken = jwtService.generateAccessToken(request.getUsername(), role);

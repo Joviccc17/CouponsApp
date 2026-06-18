@@ -41,6 +41,7 @@ public class CouponRestController {
     @PostMapping(value = "/xml", consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> createFromXml(@RequestBody String xmlBody) {
         List<String> errors = xsdValidationService.validate(xmlBody);
+
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("errors", errors));
         }

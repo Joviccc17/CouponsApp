@@ -25,5 +25,5 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // READ_ONLY or FULL_ACCESS
+    private String role;
 }
